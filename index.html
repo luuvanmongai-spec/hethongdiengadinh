@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô Phỏng Hệ Thống Điện Trong Gia Đình - Công Nghệ 12 (Bài 8)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap');
+    * {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      user-select: none;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(245, 158, 11, 0.6);
+      border-radius: 9999px;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    /* Hiệu ứng tia chớp quang học biến hình */
+    @keyframes lightningFlash {
+      0% {
+        opacity: 0;
+        transform: scale(0.6);
+        filter: brightness(2.5) drop-shadow(0 0 45px #38bdf8);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1.2);
+        filter: brightness(3.8) drop-shadow(0 0 90px #f59e0b);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.5);
+        filter: brightness(1);
+      }
+    }
+    .lightning-effect {
+      animation: lightningFlash 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Hiệu ứng khung hào quang chỉ hiện khi được chọn */
+    @keyframes selectedAura {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 25px 6px rgba(245, 158, 11, 0.85), inset 0 0 15px rgba(245, 158, 11, 0.5); }
+      50% { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 0 40px 10px rgba(56, 189, 248, 0.95), inset 0 0 22px rgba(56, 189, 248, 0.6); }
+    }
+    .active-aura {
+      animation: selectedAura 1.8s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-screen w-screen overflow-hidden flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="h-16 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between px-3 md:px-5 z-30 shadow-lg flex-shrink-0">
+    <div class="flex items-center space-x-3">
+      <!-- Logo Thương Hiệu THẦY MONG-CN (Đã thay thế hoàn toàn ô TM bằng logo chuẩn) -->
+      <div class="relative group cursor-pointer flex items-center justify-center p-0.5">
+        <div class="absolute -inset-1 rounded-xl bg-gradient-to-r from-blue-500/40 to-amber-500/40 blur-sm group-hover:opacity-100 opacity-60 transition duration-300"></div>
+        <div class="relative w-12 h-12 flex items-center justify-center">
+          <!-- Logo dạng Vector SVG tái hiện chính xác 100% hình ảnh THẦY MONG - CN -->
+          <svg class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(56,189,248,0.4)]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Gradient Chữ T Xanh -->
+              <linearGradient id="gradTFace" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0080ff"/>
+                <stop offset="50%" stop-color="#0066ee"/>
+                <stop offset="100%" stop-color="#0044cc"/>
+              </linearGradient>
+              <linearGradient id="gradTSide" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0044aa"/>
+                <stop offset="100%" stop-color="#002266"/>
+              </linearGradient>
+              
+              <!-- Gradient Chữ M Nâu Cam -->
+              <linearGradient id="gradMFace" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#e65c00"/>
+                <stop offset="50%" stop-color="#ba3c00"/>
+                <stop offset="100%" stop-color="#732200"/>
+              </linearGradient>
+              <linearGradient id="gradMSide" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff7b25"/>
+                <stop offset="100%" stop-color="#993300"/>
+              </linearGradient>
+
+              <!-- Gradient Quỹ đạo Xanh & Cam -->
+              <linearGradient id="gradOrbitBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="50%" stop-color="#0284c7"/>
+                <stop offset="100%" stop-color="#0369a1"/>
+              </linearGradient>
+              <linearGradient id="gradOrbitOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="60%" stop-color="#c2410c"/>
+                <stop offset="100%" stop-color="#7c2d12"/>
+              </linearGradient>
+              
+              <!-- Vệt chữ cong Thầy Mong-CN -->
+              <path id="textArcPath" d="M 175 145 Q 260 95 385 75" fill="transparent"/>
+            </defs>
+
+            <!-- Quỹ đạo vòng cung trên (Xanh lam phóng vệt ánh sáng) -->
+            <path d="M 160 160 C 230 140 330 95 410 65 C 380 90 320 125 240 148 C 190 162 165 162 160 160 Z" fill="url(#gradOrbitBlue)"/>
+            <path d="M 330 95 Q 405 65 425 60 C 400 75 350 102 330 95 Z" fill="#7dd3fc" filter="blur(0.5px)"/>
+
+            <!-- Quỹ đạo vòng cung trên (Nâu cam uốn lượn ra sau) -->
+            <path d="M 400 45 C 430 55 470 95 420 135 C 370 170 290 145 360 130 C 430 115 420 70 395 55 Z" fill="url(#gradOrbitOrange)"/>
+
+            <!-- Khối Kiến Trúc Chữ T (Mặt cắt 3D Đa Giác Xanh) -->
+            <!-- Cánh ngang T -->
+            <polygon points="95,140 285,210 260,240 95,190" fill="url(#gradTFace)"/>
+            <!-- Thân đứng T -->
+            <polygon points="142,185 195,205 195,395 142,395" fill="url(#gradTFace)"/>
+            <polygon points="195,205 245,225 245,395 195,395" fill="url(#gradTSide)"/>
+
+            <!-- Khối Chữ M / Cửa Cổng 3D (Nâu Đồng Cam) -->
+            <!-- Khối nóc mái vát M -->
+            <polygon points="205,218 395,145 395,195 245,255" fill="url(#gradMSide)"/>
+            <!-- Trụ đứng phải M -->
+            <polygon points="335,245 395,200 395,405 335,405" fill="url(#gradMFace)"/>
+            <!-- Trụ trong & Mặt phản quang -->
+            <polygon points="245,255 280,242 280,340 245,325" fill="#662200"/>
+
+            <!-- Bậc thang viền sáng dẫn vào tâm -->
+            <polygon points="215,330 270,330 258,345 205,345" fill="#38bdf8"/>
+            <polygon points="185,360 290,360 275,378 170,378" fill="#0284c7"/>
+            <polygon points="150,405 342,405 315,390 180,390" fill="#993300"/>
+
+            <!-- Quỹ đạo vòng cung dưới bên trái (Nâu Cam bao bọc) -->
+            <path d="M 28 360 C 25 410 70 450 160 445 C 245 440 310 425 355 415 C 275 435 180 435 110 420 C 55 405 45 375 55 355 C 65 330 110 300 150 280 C 105 305 32 325 28 360 Z" fill="url(#gradOrbitOrange)"/>
+            <!-- Vòng xanh phía dưới đan xen -->
+            <path d="M 55 375 C 68 335 125 295 195 260 C 130 295 80 340 70 380 C 62 410 110 425 155 430 C 100 420 50 405 55 375 Z" fill="url(#gradOrbitBlue)"/>
+
+            <!-- Chữ "THẦY MONG-CN" uốn lượn theo vệt bay -->
+            <text font-family="'Be Vietnam Pro', Arial, sans-serif" font-weight="900" font-size="29" fill="#0066ee">
+              <textPath href="#textArcPath" startOffset="5%">
+                THẦY <tspan fill="#d9480f">MONG-CN</tspan>
+              </textPath>
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-xs md:text-sm font-extrabold bg-gradient-to-r from-amber-300 via-orange-300 to-yellow-100 bg-clip-text text-transparent flex items-center gap-2">
+            CÔNG NGHỆ 12 • BÀI 8: HỆ THỐNG ĐIỆN TRONG GIA ĐÌNH
+          </h1>
+          <span class="hidden lg:inline text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Chạm thiết bị nào hiện tên thiết bị đó</span>
+        </div>
+        <p class="text-[11px] text-slate-400 hidden sm:block">Chạm trực tiếp vào thiết bị trong nhà để kích hoạt loá sáng biến hình, zoom to và xem thuyết minh chi tiết</p>
+      </div>
+    </div>
+
+    <!-- Quick Toolset -->
+    <div class="flex items-center space-x-2">
+      <button id="btn-reset-view" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 active:scale-95 transition flex items-center gap-1.5 border border-slate-700">
+        <i class="fa-solid fa-expand text-sky-400"></i>
+        <span>Toàn cảnh</span>
+      </button>
+
+      <button id="btn-open-quiz" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 active:scale-95 transition flex items-center gap-1.5 shadow-lg shadow-amber-500/25">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>Kiểm Tra Nhanh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace Area -->
+  <div class="relative flex-1 w-full h-full overflow-hidden flex">
+
+    <!-- Left Equipment List Drawer -->
+    <aside class="hidden lg:flex w-80 glass-panel border-r border-slate-800/80 flex-col z-20 transition-all duration-300 flex-shrink-0" id="sidebar">
+      <div class="p-3.5 border-b border-slate-800/90 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-diagram-project text-amber-400 text-sm"></i>
+          <h2 class="font-bold text-xs uppercase tracking-wider text-slate-200">Danh Mục Thiết Bị Điện</h2>
+        </div>
+        <span class="text-[10px] bg-amber-500/20 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-500/30">10 Thiết bị</span>
+      </div>
+
+      <!-- Equipment Scroll List -->
+      <div class="flex-1 overflow-y-auto p-2.5 space-y-2" id="equipment-list">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Guide Note -->
+      <div class="p-3 bg-slate-900/90 border-t border-slate-800 text-[11px] text-slate-400 flex flex-col gap-1.5">
+        <div class="flex items-center gap-2 font-semibold text-emerald-300">
+          <i class="fa-solid fa-hand-pointer"></i> Tương tác thông minh:
+        </div>
+        <p class="leading-relaxed">Không có dấu chấm hay số che khuất hình ảnh. <strong>Chạm vào thiết bị nào trên hình</strong> thì hào quang sẽ loá sáng, zoom to và nhãn tên chỉ hiện tại đúng vị trí đó.</p>
+      </div>
+    </aside>
+
+    <!-- Center Viewport -->
+    <div class="relative flex-1 h-full w-full bg-slate-950 flex items-center justify-center overflow-hidden p-2 md:p-4" id="viewport-container">
+      
+      <!-- Interactive Board Wrapper -->
+      <div id="image-wrapper" class="relative max-w-full max-h-full transition-transform duration-700 ease-out flex items-center justify-center">
+        
+        <!-- Main Board Frame -->
+        <div class="relative inline-block max-w-[94vw] max-h-[86vh] rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-900" id="board-container">
+          
+          <!-- Image Tag: Cập nhật nạp mặc định file ảnh sạch hoàn toàn không chữ -->
+          <img id="main-house-img" 
+               src="Gemini_Generated_Image_dta6ldta6ldta6ld.png" 
+               alt="Mô hình 3D Hệ thống điện gia đình - Công Nghệ 12" 
+               class="block max-h-[85vh] w-auto h-auto object-contain select-none shadow-2xl transition-all duration-300">
+
+          <!-- Hotspots Layer HOÀN TOÀN TÀNG HÌNH (Không dấu chấm, không số, chỉ khi chọn mới hiện hào quang & nhãn) -->
+          <div id="hotspots-layer" class="absolute inset-0 pointer-events-auto">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Lightning Flare Transformation Layer -->
+          <div id="flash-overlay" class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 bg-radial from-amber-300/80 via-sky-400/40 to-transparent flex items-center justify-center z-30">
+            <div class="w-40 h-40 rounded-full border-4 border-white bg-amber-300/60 blur-lg"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Quick Floating Helper Badge -->
+      <div class="absolute top-4 left-4 z-10 glass-panel px-3.5 py-2 rounded-xl text-xs space-y-0.5 shadow-2xl border border-emerald-500/30">
+        <div class="flex items-center gap-2 text-emerald-400 font-bold">
+          <i class="fa-solid fa-sparkles"></i>
+          <span>Chạm vào thiết bị nào trong nhà để hiện tên và thuyết minh</span>
+        </div>
+        <p class="text-[11px] text-slate-300">Nhấp trực tiếp trên hình hoặc chọn trong danh sách bên trái</p>
+      </div>
+
+    </div>
+
+    <!-- Right Dedicated Info Sidebar: Nhỏ gọn, tinh tế, ép sát mép phải màn hình -->
+    <aside id="info-card" class="hidden absolute top-2 right-2 md:top-4 md:right-4 w-64 md:w-72 max-h-[85vh] glass-panel rounded-2xl border border-slate-700/80 flex-col z-30 shadow-2xl transition-all duration-300 p-3 justify-between overflow-hidden">
+      <div class="flex items-start justify-between pb-2 border-b border-slate-700/70">
+        <div>
+          <span id="info-tag" class="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/30">Cấp Nguồn Tổng</span>
+          <h3 id="info-title" class="text-sm font-extrabold text-white mt-0.5 leading-snug">Công Tơ Điện</h3>
+        </div>
+        <button id="btn-close-card" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition" title="Đóng bảng để ngắm toàn cảnh">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto my-2 pr-1 space-y-2 text-[11px]">
+        <!-- Technical Specs -->
+        <div class="grid grid-cols-1 gap-1.5 text-[10px]">
+          <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block text-[9.5px]">Vị trí lắp đặt:</span>
+            <span id="info-location" class="font-semibold text-slate-200">Trên cột điện ngoài nhà</span>
+          </div>
+          <div class="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block text-[9.5px]">Ký hiệu / Thông số:</span>
+            <span id="info-code" class="font-bold text-amber-400 font-mono">kWh • 220V 10(40)A</span>
+          </div>
+        </div>
+
+        <!-- Role & Function in House -->
+        <div>
+          <h4 class="text-[10px] font-bold text-amber-400 uppercase flex items-center gap-1 mb-1">
+            <i class="fa-solid fa-bolt-lightning text-[9px]"></i> Chức Năng (Công Nghệ 12)
+          </h4>
+          <p id="info-desc" class="text-slate-300 leading-relaxed bg-slate-900/80 p-2 rounded-lg border border-slate-800 text-[10.5px]">
+            Đo đếm tổng điện năng tác dụng (kWh) tiêu thụ của hộ gia đình từ lưới điện hạ áp quốc gia.
+          </p>
+        </div>
+
+        <!-- Working Principle -->
+        <div>
+          <h4 class="text-[10px] font-bold text-sky-400 uppercase flex items-center gap-1 mb-1">
+            <i class="fa-solid fa-gears text-[9px]"></i> Nguyên Lý & Yêu Cầu An Toàn
+          </h4>
+          <p id="info-principle" class="text-slate-300 leading-relaxed bg-slate-900/80 p-2 rounded-lg border border-slate-800 text-[10.5px]">
+            Lắp nối tiếp sau lưới điện, trước aptomat bảo vệ ngoài trời. Phải được niêm phong kẹp chì kiểm định.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Button: Chế độ tách riêng thiết bị thực tế -->
+      <div class="pt-2 border-t border-slate-800">
+        <button id="btn-isolate-3d" class="w-full py-2 rounded-lg text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 active:scale-95 transition">
+          <i class="fa-solid fa-crop-simple text-xs"></i> Tách riêng soi cận cảnh
+        </button>
+      </div>
+    </aside>
+
+    <!-- ISOLATED DEVICE MODAL: LẤY 100% ẢNH THỰC TẾ CỦA THIẾT BỊ TỪ NGÔI NHÀ -->
+    <div id="modal-isolate" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-2 md:p-6">
+      <div class="w-full max-w-5xl h-[90vh] glass-panel rounded-2xl flex flex-col overflow-hidden border border-amber-500/50 shadow-2xl">
+        <!-- Header -->
+        <div class="p-3.5 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <div>
+              <h3 class="text-sm md:text-base font-extrabold text-white flex items-center gap-2">
+                HÌNH ẢNH THỰC TẾ BÓC TÁCH TỪ NGÔI NHÀ: <span id="isolate-title" class="text-amber-400">Tủ Điện Nhánh Tầng 2</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">Hình ảnh trích xuất nguyên bản 100% từ mô hình ngôi nhà • Dùng con lăn chuột hoặc thanh trượt để phóng to, kéo chuột để soi từng chi tiết</p>
+            </div>
+          </div>
+          <button id="btn-close-isolate" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-red-600/30">
+            <i class="fa-solid fa-xmark"></i> Đóng lại
+          </button>
+        </div>
+
+        <!-- Body: Viewer + Anatomy info -->
+        <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative bg-slate-950">
+          
+          <!-- Left/Center: Real Device Viewport with Interactive Pan/Zoom -->
+          <div class="flex-1 relative overflow-hidden flex items-center justify-center bg-slate-950 select-none cursor-grab active:cursor-grabbing" id="isolate-viewport">
+            
+            <!-- Grid lines background -->
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+            <!-- Frame containing the actual cropped device from user's house image -->
+            <div id="isolate-display-frame" class="relative w-80 h-80 md:w-[440px] md:h-[440px] rounded-2xl overflow-hidden border-2 border-amber-500/60 shadow-[0_0_50px_rgba(245,158,11,0.25)] bg-slate-950">
+              <img id="isolate-real-img" 
+                   src="Gemini_Generated_Image_dta6ldta6ldta6ld.png" 
+                   alt="Thiết bị thực tế bóc tách từ ngôi nhà" 
+                   class="absolute max-w-none transition-transform duration-200 ease-out pointer-events-none"
+                   style="transform-origin: 0% 0%;">
+              
+              <!-- Crosshair viewfinder lines -->
+              <div class="absolute inset-0 pointer-events-none border border-amber-400/20">
+                <div class="absolute top-1/2 left-0 right-0 h-[1px] bg-amber-400/20"></div>
+                <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-amber-400/20"></div>
+              </div>
+            </div>
+
+            <!-- Floating Zoom Control Toolbar -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 rounded-2xl flex items-center gap-3 border border-slate-700/80 shadow-2xl z-20">
+              <button id="btn-iso-zoom-out" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs font-bold transition">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <input type="range" id="iso-zoom-slider" min="100" max="600" value="350" class="w-28 md:w-44 accent-amber-500 cursor-pointer">
+              <button id="btn-iso-zoom-in" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs font-bold transition">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <button id="btn-iso-reset-pos" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold transition flex items-center gap-1" title="Về vị trí chuẩn">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span class="hidden sm:inline">Đặt lại</span>
+              </button>
+              <span id="iso-zoom-val" class="text-xs font-mono font-bold text-amber-400 min-w-[45px] text-right">350%</span>
+            </div>
+
+            <!-- Tip badge -->
+            <div class="absolute top-3 left-3 pointer-events-none glass-panel px-3 py-1.5 rounded-lg text-[11px] text-slate-300 flex items-center gap-2 border border-slate-800">
+              <i class="fa-solid fa-hand-pointer text-amber-400"></i>
+              <span>Giữ và kéo chuột để di chuyển • Lăn con lăn để phóng to / thu nhỏ</span>
+            </div>
+          </div>
+
+          <!-- Right: Anatomy & Educational Specification Panel -->
+          <div class="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-slate-800 bg-slate-900/90 p-4 overflow-y-auto flex flex-col space-y-4 flex-shrink-0">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded border border-emerald-500/30">
+                Ảnh Gốc 100% Từ Ngôi Nhà
+              </span>
+              <h4 id="isolate-side-name" class="text-base font-extrabold text-white mt-1.5">Tủ Điện Nhánh Tầng 2</h4>
+              <p id="isolate-side-loc" class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                <i class="fa-solid fa-location-dot text-amber-400"></i>
+                <span>Vách tường phòng ngủ & làm việc Tầng 2</span>
+              </p>
+            </div>
+
+            <!-- Visual Feature Points -->
+            <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+              <h5 class="text-[11px] font-bold text-amber-400 uppercase flex items-center gap-1.5 mb-2">
+                <i class="fa-solid fa-eye"></i> Đặc Điểm Nhận Dạng Trên Ảnh Thực Tế
+              </h5>
+              <ul id="isolate-visual-points" class="space-y-1.5 text-xs text-slate-300">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+
+            <!-- Lesson Technical Details -->
+            <div class="space-y-3 flex-1">
+              <div>
+                <h5 class="text-[11px] font-bold text-sky-400 uppercase flex items-center gap-1.5 mb-1">
+                  <i class="fa-solid fa-microchip"></i> Cấu Tạo Chi Tiết Bên Trong
+                </h5>
+                <p id="isolate-side-structure" class="text-xs text-slate-300 leading-relaxed bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/60">
+                  <!-- Injected via JS -->
+                </p>
+              </div>
+
+              <div>
+                <h5 class="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1.5 mb-1">
+                  <i class="fa-solid fa-shield-halved"></i> Chức Năng Bảo Vệ & Vận Hành
+                </h5>
+                <p id="isolate-side-safety" class="text-xs text-slate-300 leading-relaxed bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/60">
+                  <!-- Injected via JS -->
+                </p>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 border-t border-slate-800 pt-2 flex items-center justify-between">
+              <span>Công Nghệ 12 • Bài 8</span>
+              <span class="text-amber-400 font-semibold">Chuẩn Giáo Trình Bộ GD&ĐT</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mini Quiz Modal -->
+    <div id="quiz-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="glass-panel w-full max-w-lg rounded-2xl p-5 border border-amber-500/40 shadow-2xl flex flex-col space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-graduation-cap text-amber-400 text-xl"></i>
+            <h3 class="text-base font-bold text-white">Kiểm Tra Củng Cố - Công Nghệ 12 (Bài 8)</h3>
+          </div>
+          <button id="btn-close-quiz" class="text-slate-400 hover:text-white">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div id="quiz-content" class="space-y-4 text-xs">
+          <div class="text-sm font-semibold text-amber-200" id="quiz-question"></div>
+          <div class="space-y-2" id="quiz-options"></div>
+          <div id="quiz-feedback" class="p-3 rounded-xl hidden text-xs font-medium"></div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-700/60 flex justify-between items-center">
+          <span id="quiz-progress" class="text-[11px] text-slate-400">Câu 1 / 5</span>
+          <button id="btn-next-quiz" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 transition hidden">
+            Câu tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       DATA: 10 THIẾT BỊ HỆ THỐNG ĐIỆN GIA ĐÌNH - BÀI 8 CÔNG NGHỆ 12
+       Toạ độ phần trăm (%) khớp chuẩn xác từng vị trí trên ảnh ngôi nhà
+       ========================================================================== */
+    const ELECTRICAL_COMPONENTS = [
+      {
+        id: 'cong-to-dien',
+        name: 'Công Tơ Điện',
+        tag: 'Đo Lường & Phân Ranh',
+        code: 'kWh Meter • 220V 10(40)A',
+        location: 'Treo trên cột bê tông ngoài đường (cạnh nhà)',
+        desc: 'Là thiết bị dùng để đo đếm tổng lượng điện năng tác dụng (kWh) mà gia đình đã tiêu thụ từ lưới điện quốc gia.',
+        principle: 'Lắp nối tiếp ngay sau đường dây nhánh hạ thế và trước aptomat bảo vệ ngoài trời. Thiết bị được cơ quan Điện lực niêm phong kẹp chì kiểm định.',
+        percent: { x: 87.5, y: 40.5 },
+        zoomScale: 2.2,
+        cropZoom: 460,
+        visualPoints: [
+          "Dạng tròn vỏ đen có mặt kính quan sát số đo đếm hiển thị kWh.",
+          "Treo ở vị trí trên cao của cột điện để tiện cho nhân viên ghi chỉ số.",
+          "Dây cáp nguồn từ lưới điện đi thẳng qua công tơ trước khi cấp xuống tủ aptomat phía dưới."
+        ],
+        structure: "Gồm cuộn dây điện áp, cuộn dây dòng điện, đĩa nhôm quay (đối với loại cơ) hoặc mạch đếm điện tử bán dẫn, bộ số hiển thị kWh và kẹp chì niêm phong bảo đảm tính nguyên vẹn.",
+        safety: "Ranh giới tài sản giữa Điện lực và hộ gia đình. Tự ngắt kết nối an toàn khi có tác động vi phạm hoặc sự cố lớn từ lưới."
+      },
+      {
+        id: 'aptomat-ngoai-troi',
+        name: 'Aptomat Tủ Điện Ngoài Trời',
+        tag: 'Bảo Vệ Nguồn Vào',
+        code: 'MCCB / MCB 2P • 63A IP65',
+        location: 'Tủ kim loại chống nước trên cột điện (ngay dưới công tơ)',
+        desc: 'Bảo vệ đường cáp nguồn từ cột vào tủ điện tổng trong nhà; tự động ngắt điện khi quá tải hoặc chập cháy ngay từ ranh giới tiếp nhận điện.',
+        principle: 'Sử dụng vỏ kim loại sơn tĩnh điện chống mưa nắng (cấp bảo vệ IP65), giúp thợ điện cách ly an toàn từ bên ngoài khi cần sửa chữa khẩn cấp mạng điện trong nhà.',
+        percent: { x: 87.0, y: 54.5 },
+        zoomScale: 2.2,
+        cropZoom: 420,
+        visualPoints: [
+          "Hộp tủ kim loại sơn ghi xám có nắp mở chống nước đặt ngay dưới công tơ.",
+          "Bên trong gắn một Aptomat công suất lớn đóng vai trò cầu dao cấp điện đầu nguồn.",
+          "Nối với đường ống dẫn cáp màu cam đi ngầm/nổi cấp vào tủ điện tổng trong nhà."
+        ],
+        structure: "Vỏ tủ làm bằng kim loại chịu nhiệt có gioăng cao su chống nước (chuẩn IP65). Bên trong chứa khối Aptomat khối MCCB 2 cực (2P) chịu dòng ngắn mạch lớn.",
+        safety: "Ngắt toàn bộ nguồn điện vào nhà khi có sự cố chập cáp vào nhà, giúp thợ điện cắt điện từ ngoài cột mà không cần vào trong nhà."
+      },
+      {
+        id: 'tu-dien-tong',
+        name: 'Tủ Điện Tổng Trong Nhà (Main DB)',
+        tag: 'Trung Tâm Phân Phối',
+        code: 'MDB • RCBO 50A + Dãy MCB',
+        location: 'Tầng 1 (Khu vực giặt ủi / Cạnh lối vào)',
+        desc: 'Trung tâm đầu não tiếp nhận nguồn 220V từ ngoài trời và nguồn từ pin mặt trời (Inverter). Chứa Aptomat tổng, chống dòng rò (RCBO) và phân nhánh tới các tầng.',
+        principle: 'Chứa các hàng thanh ray DIN gắn MCB/RCBO bảo vệ. Khi phát hiện chạm chập tổng hoặc dòng rò rỉ vượt quá 30mA, RCBO sẽ tự động ngắt tức thì để bảo vệ tính mạng.',
+        percent: { x: 74.5, y: 62.5 },
+        zoomScale: 2.1,
+        cropZoom: 380,
+        visualPoints: [
+          "Tủ điện cỡ lớn nhất trong nhà, mở cánh tủ màu ghi để lộ 3 hàng thiết bị bên trong.",
+          "Các hàng thanh ray gắn đầy đủ Aptomat tổng màu trắng, các aptomat nhánh và hàng dây điện uốn gập ngay ngắn.",
+          "Có tuyến ống ghen màu cam kết nối từ ngoài cột vào và tỏa đi các phòng/tầng."
+        ],
+        structure: "Khung tủ kim loại âm tường đa tầng, 3 thanh ray DIN kim loại, 01 Aptomat tổng RCBO chống giật, các Aptomat nhánh MCB, thanh cái phân phối đồng và hàng cầu đấu dây N/PE.",
+        safety: "Tự động nhảy ngắt trong 0.03 giây khi có dòng rò rỉ điện >30mA; bảo vệ ngăn ngừa sự cố chập điện cháy nổ cho toàn bộ ngôi nhà."
+      },
+      {
+        id: 'tu-dien-bep',
+        name: 'Tủ Điện Nhánh Khu Bếp',
+        tag: 'Phân Phối Phụ Tải Lớn',
+        code: 'SDB Kitchen • RCBO 32A/30mA',
+        location: 'Vách tường khu vực bếp (ngay phía trên tủ lạnh)',
+        desc: 'Cấp nguồn và bảo vệ riêng biệt cho các thiết bị công suất cực lớn và có nguy cơ rò điện cao trong bếp: Bếp điện từ, bếp hồng ngoại, lò vi sóng, tủ lạnh và máy rửa bát.',
+        principle: 'Khu bếp thường xuyên ẩm ướt và người sử dụng tiếp xúc vỏ kim loại. Tủ nhánh này bắt buộc tích hợp Aptomat chống dòng rò (RCBO 30mA) ngắt trong 0.03 giây khi chạm rò, đồng thời chịu tải nặng lên tới 6000W-7000W mà không làm mất điện phòng khách hay tầng 2.',
+        percent: { x: 57.0, y: 60.5 },
+        zoomScale: 2.4,
+        cropZoom: 460,
+        visualPoints: [
+          "Tủ điện nằm ngang trên tường ngay phía trên đầu tủ lạnh 2 cánh.",
+          "Mặt trước màu ghi xám với ô nắp che mica đen bảo vệ các cần gạt át bên trong.",
+          "Nối các đường ống cam: 1 đường nhận từ tủ tổng, 3 đường tỏa xuống bếp nấu, tủ lạnh và ổ cắm đảo bếp."
+        ],
+        structure: "Gồm vỏ hộp nhựa chống ẩm ABS, ray bắt 4-6 cực aptomat, aptomat chống giật riêng cho bếp từ RCBO 32A và các MCB 16A cho ổ cắm nhà bếp.",
+        safety: "Khoanh vùng sự cố ẩm rò điện trong bếp, ngắt riêng bếp mà không ảnh hưởng đèn hay tivi phòng khách."
+      },
+      {
+        id: 'tu-dien-tang2',
+        name: 'Tủ Điện Nhánh Tầng 2',
+        tag: 'Phân Phối Tầng 2',
+        code: 'SDB Floor 2 • MCB 32A',
+        location: 'Vách tường phòng ngủ & làm việc Tầng 2',
+        desc: 'Tiếp nhận nguồn từ tủ điện tổng, phân nhánh cấp riêng cho tầng 2 gồm: Aptomat điều hoà, Aptomat chiếu sáng và Aptomat ổ cắm máy tính.',
+        principle: 'Giúp khoanh vùng sự cố tại tầng 2 mà không làm mất điện tầng 1; học sinh và gia chủ có thể thao tác đóng/cắt kiểm tra thiết bị độc lập.',
+        percent: { x: 35.0, y: 36.5 },
+        zoomScale: 2.3,
+        cropZoom: 480,
+        visualPoints: [
+          "Hộp tủ màu ghi sáng khoét rỗng thành sâu gắn nổi trên vách tường tầng 2.",
+          "Bên cạnh có một hộp phụ nhỏ màu xám (hộp đấu nối chuyển tiếp).",
+          "Bên trong thấy rõ hàng Aptomat MCB trắng và dãy cọc đấu dây (terminals) nhiều màu sắc phía dưới.",
+          "2 đường ống ghen cam uốn cong đi xuống sàn tầng 2."
+        ],
+        structure: "Vỏ tủ chứa 1 MCB nhánh 32A điều khiển tầng 2, dãy 3 MCB con (1 MCB điều hoà 16A, 1 MCB đèn 10A, 1 MCB ổ cắm 16A) và các hàng cọc đấu dây.",
+        safety: "Giúp người ở tầng 2 có thể tự ngắt điện phòng ngủ/phòng làm việc để sửa chữa mà không cần xuống tầng 1 ngắt tủ tổng."
+      },
+      {
+        id: 'tu-dien-phong-khach',
+        name: 'Tủ Điện Nhánh Phòng Khách',
+        tag: 'Phân Phối Nhánh Tầng 1',
+        code: 'SDB Floor 1 • MCB 32A',
+        location: 'Vách tường phòng khách tầng 1',
+        desc: 'Cấp điện độc lập cho phòng khách: phụ trách máy lạnh phòng khách, tivi, dàn âm thanh, rèm tự động và đèn chiếu sáng trang trí.',
+        principle: 'Tách riêng với bếp và tầng 2, ngăn ngừa hiện tượng sụt áp khi các thiết bị công suất lớn như điều hoà, bếp từ cùng khởi động đồng thời.',
+        percent: { x: 18.5, y: 57.5 },
+        zoomScale: 2.3,
+        cropZoom: 460,
+        visualPoints: [
+          "Hộp tủ vuông nhỏ gắn trên vách tường bên cạnh ghế sofa và tivi.",
+          "Tủ mở lộ hàng aptomat và đường ống cam dẫn thẳng lên máy điều hoà phòng khách và xuống ổ cắm TV."
+        ],
+        structure: "Gồm ray gắn MCB 1P và 2P, vỏ chống bụi tiêu chuẩn bảo vệ khu sinh hoạt gia đình.",
+        safety: "Cách ly phụ tải phòng khách với khu bếp ẩm ướt, bảo vệ thiết bị điện tử đắt tiền (TV OLED, dàn âm thanh)."
+      },
+      {
+        id: 'aptomat-dieu-hoa',
+        name: 'Aptomat Cấp Điện Điều Hoà',
+        tag: 'Phụ Tải Công Suất Lớn',
+        code: 'MCB 1P/2P • 16A-20A Loại C',
+        location: 'Cấp dây trực tiếp cho dàn lạnh điều hoà',
+        desc: 'Bảo vệ riêng biệt cho máy điều hoà không khí khi máy nén hoạt động ở công suất lớn và liên tục.',
+        principle: 'Sử dụng aptomat đặc tuyến loại C (C-Curve) chịu được dòng xung kích khởi động (Inrush Current) gấp 5-10 lần dòng định mức mà không bị nhảy nhầm.',
+        percent: { x: 56.5, y: 43.0 },
+        zoomScale: 2.4,
+        cropZoom: 420,
+        visualPoints: [
+          "Ống dẫn cam chạy trực tiếp đến khối dàn lạnh điều hoà màu trắng treo trên tường phòng ngủ tầng 2.",
+          "Cần gạt ngắt điện riêng biệt độc lập với tuyến chiếu sáng."
+        ],
+        structure: "Bộ cảm ứng nhiệt lưỡng kim ngắt quá tải và cuộn dây điện từ ngắt ngắn mạch tức thời theo đặc tuyến C.",
+        safety: "Tránh sụt áp hoặc làm nhảy aptomat tổng mỗi khi máy nén inverter khởi động làm mát."
+      },
+      {
+        id: 'he-thong-chieu-sang',
+        name: 'Aptomat & Hệ Thống Chiếu Sáng',
+        tag: 'Phụ Tải Chiếu Sáng',
+        code: 'MCB 1P • 6A - 10A',
+        location: 'Bóng đèn trần, đèn cây trang trí góc phòng khách',
+        desc: 'Cung cấp nguồn quang năng cho sinh hoạt của gia đình. Tuyến dây đèn tách riêng hoàn toàn với tuyến ổ cắm.',
+        principle: 'Dây dẫn tiết diện 1.5mm² ruột đồng, công suất tiêu thụ nhỏ. Tách riêng giúp đèn không bị nhấp nháy hoặc sụt áp khi cắm thiết bị tải nặng.',
+        percent: { x: 33.5, y: 56.5 },
+        zoomScale: 2.3,
+        cropZoom: 400,
+        visualPoints: [
+          "Các cụm đèn cây trang trí đứng góc phòng, đèn treo trần phát ánh sáng vàng ấm áp.",
+          "Dây điện cam luồn âm tường dẫn nguồn ổn định."
+        ],
+        structure: "Aptomat bảo vệ định mức nhỏ 6A-10A phù hợp công suất đèn LED tiết kiệm điện.",
+        safety: "Khi một ổ cắm trong nhà bị chập, hệ thống đèn chiếu sáng vẫn sáng bình thường giúp gia đình xử lý an toàn."
+      },
+      {
+        id: 'he-thong-o-cam',
+        name: 'Aptomat & Hệ Thống Ổ Cắm',
+        tag: 'Phụ Tải Sinh Hoạt',
+        code: 'MCB 16A - 20A + Ổ cắm 2P+E',
+        location: 'Vách tường cạnh bàn làm việc, kệ tivi, bàn bếp',
+        desc: 'Cấp điện an toàn cho thiết bị di động, tivi, tủ lạnh, lò vi sóng. Tiêu chuẩn hiện đại luôn có chân tiếp địa (E - Earth) chống rò điện.',
+        principle: 'Được bảo vệ bởi aptomat 16A-20A riêng, dây dẫn tối thiểu 2.5mm² ruột đồng cách điện PVC chống quá nhiệt phát sinh hoả hoạn.',
+        percent: { x: 34.5, y: 50.0 },
+        zoomScale: 2.3,
+        cropZoom: 450,
+        visualPoints: [
+          "Các mặt ổ cắm gắn trên tường cạnh bàn máy tính tầng 2 và kệ tivi tầng 1.",
+          "Hộp cắm tiếp đất 3 chấu hiện đại có nắp che an toàn trẻ em."
+        ],
+        structure: "Gồm chân cực L (Pha), N (Trung tính) và cực E (Tiếp đất bảo vệ).",
+        safety: "Chân tiếp địa dẫn dòng rò xuống đất, triệt tiêu nguy cơ điện giật khi chạm vỏ máy tính hoặc tivi."
+      },
+      {
+        id: 'pin-nang-luong-mat-troi',
+        name: 'Pin Năng Lượng Mặt Trời & Inverter',
+        tag: 'Nguồn Năng Lượng Tái Tạo',
+        code: 'Solar PV 5kWp + Hybrid Inverter',
+        location: 'Lắp trên mái ngói dốc đón ánh nắng mặt trời',
+        desc: 'Hấp thụ quang năng mặt trời chuyển thành điện một chiều (DC), biến tần Inverter đổi thành dòng xoay chiều 220V AC hoà vào tủ điện tổng gia đình.',
+        principle: 'Cung cấp năng lượng xanh giờ cao điểm, giảm đáng kể tiền điện hàng tháng và tự động phối hợp nhịp nhàng với nguồn điện lưới.',
+        percent: { x: 48.0, y: 31.0 },
+        zoomScale: 1.9,
+        cropZoom: 350,
+        visualPoints: [
+          "2 Dàn pin năng lượng mặt trời màu xanh lam đậm lợp trên 2 mái dốc của ngôi nhà.",
+          "Đón trực tiếp các tia nắng vàng rực rỡ từ mặt trời.",
+          "Tuyến ống cam dẫn điện DC xuống bộ biến tần hòa vào tủ điện tổng."
+        ],
+        structure: "Gồm các tế bào quang điện (Solar Cells) nối tiếp phủ kính cường lực chống va đập, khung nhôm định hình và bộ Inverter chuyển đổi DC/AC.",
+        safety: "Tích hợp cầu chì DC và chống sét lan truyền bảo vệ hệ thống điện ngôi nhà khi có giông sét."
+      }
+    ];
+
+    /* Quiz Data - Bài 8 Công Nghệ 12 */
+    const QUIZ_QUESTIONS = [
+      {
+        q: "Theo thiết kế chuẩn của Bài 8 Công nghệ 12, thiết bị nào dùng để đo tổng lượng điện năng tiêu thụ (kWh) của toàn bộ gia đình?",
+        options: ["Aptomat chống rò RCBO", "Công tơ điện", "Biến áp cách ly", "Cầu chì bảo vệ"],
+        correct: 1,
+        explain: "Công tơ điện (điện kế) là thiết bị đo đếm tổng điện năng tác dụng (kWh) tiêu thụ của hộ gia đình từ lưới điện."
+      },
+      {
+        q: "Tại sao trên vách tường phía trên tủ lạnh khu bếp cần bố trí riêng một tủ điện nhánh (SDB Khu Bếp)?",
+        options: [
+          "Vì khu bếp tập trung các thiết bị công suất rất lớn (bếp từ, lò nướng) và môi trường ẩm ướt cần aptomat chống giật RCBO riêng",
+          "Chỉ để nối dây cho bóng đèn trang trí tủ lạnh",
+          "Để biến điện áp 220V thành điện 110V cho bếp",
+          "Để thay thế luôn tủ điện tổng của toà nhà"
+        ],
+        correct: 0,
+        explain: "Khu bếp có phụ tải lớn (bếp từ, vi sóng, nồi chiên) và môi trường ẩm dễ rò điện, do đó cần tủ nhánh riêng có RCBO chống rò 30mA để bảo vệ an toàn."
+      },
+      {
+        q: "Tủ điện tổng trong nhà (Main DB) có vai trò chính là gì?",
+        options: [
+          "Biến đổi điện 220V thành điện 12V",
+          "Tiếp nhận nguồn từ ngoài trời/pin mặt trời và phân phối, bảo vệ từng nhánh trong nhà",
+          "Chỉ dùng để trang trí nội thất",
+          "Thay thế hoàn toàn công tơ điện trên cột"
+        ],
+        correct: 1,
+        explain: "Tủ điện tổng tiếp nhận nguồn vào, chứa aptomat tổng và các nhánh bảo vệ, phân chia điện tới từng tầng và phòng."
+      },
+      {
+        q: "Tại sao aptomat cấp điện cho máy điều hoà nhiệt độ nên tách riêng thành một nhánh độc lập?",
+        options: [
+          "Vì máy nén điều hoà có dòng khởi động lớn và công suất cao",
+          "Vì điều hoà chạy điện một chiều DC",
+          "Vì bắt buộc phải dùng nguồn 380V",
+          "Vì quy định cấm dùng dây đồng cho đèn chiếu sáng"
+        ],
+        correct: 0,
+        explain: "Máy nén điều hoà khi khởi động có dòng xung kích lớn, cần aptomat riêng đặc tuyến loại C để không làm nhảy át toàn nhà."
+      },
+      {
+        q: "Ổ cắm điện 3 chấu (2P+E) trong gia đình hiện đại có chân thứ 3 (chân E) dùng để làm gì?",
+        options: [
+          "Nối đất (tiếp địa) chống rò điện ra vỏ kim loại, bảo vệ an toàn tính mạng người dùng",
+          "Dự phòng khi mất điện lưới",
+          "Tăng sóng thu phát Wifi",
+          "Kết nối trực tiếp vào pin năng lượng mặt trời"
+        ],
+        correct: 0,
+        explain: "Chân E (Earth/Ground) là dây tiếp địa bảo vệ người sử dụng không bị điện giật khi thiết bị rò điện ra vỏ kim loại."
+      }
+    ];
+
+    /* ==========================================================================
+       SYNTHESIZER SOUND EFFECTS (Web Audio API)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
+      playSelect() {
+        try {
+          this.init();
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.14);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.14);
+        } catch(e){}
+      }
+      playTransformSpark() {
+        try {
+          this.init();
+          const now = this.ctx.currentTime;
+          const osc1 = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(220, now);
+          osc1.frequency.exponentialRampToValueAtTime(1400, now + 0.35);
+
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(440, now);
+          osc2.frequency.exponentialRampToValueAtTime(1900, now + 0.4);
+
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.45);
+          osc2.stop(now + 0.45);
+        } catch(e){}
+      }
+      playSuccess() {
+        try {
+          this.init();
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.value = f;
+            gain.gain.setValueAtTime(0.12, this.ctx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.08 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + i * 0.08);
+            osc.stop(this.ctx.currentTime + i * 0.08 + 0.22);
+          });
+        } catch(e){}
+      }
+    }
+    const audio = new SoundEngine();
+
+    /* ==========================================================================
+       SETUP IMAGE & STORAGE
+       ========================================================================== */
+    const DEFAULT_IMG_NAME = 'Gemini_Generated_Image_dta6ldta6ldta6ld.png';
+
+    function setupImageLoading() {
+      const img = document.getElementById('main-house-img');
+      const isoImg = document.getElementById('isolate-real-img');
+
+      // Tự động nạp trực tiếp file ảnh mặc định đã làm sạch
+      img.src = DEFAULT_IMG_NAME;
+      if (isoImg) isoImg.src = DEFAULT_IMG_NAME;
+
+      // Xử lý nạp ảnh tự động nếu đổi tên file
+      img.onerror = () => {
+        if (img.src.indexOf('Gemini_Generated_Image_uy1zp3uy1zp3uy1z') === -1) {
+          img.src = 'Gemini_Generated_Image_uy1zp3uy1zp3uy1z.png';
+          if (isoImg) isoImg.src = 'Gemini_Generated_Image_uy1zp3uy1zp3uy1z.png';
+        }
+      };
+    }
+
+    /* ==========================================================================
+       CREATE INVISIBLE HOTSPOTS (CHẠM THIẾT BỊ NÀO MỚI HIỆN TÊN ĐÓ)
+       ========================================================================== */
+    let currentSelectedId = null;
+    const hotspotsLayer = document.getElementById('hotspots-layer');
+    const imgWrapper = document.getElementById('image-wrapper');
+    const flashOverlay = document.getElementById('flash-overlay');
+
+    function createHotspots() {
+      hotspotsLayer.innerHTML = '';
+
+      ELECTRICAL_COMPONENTS.forEach((comp) => {
+        // Vùng bấm cảm ứng hoàn toàn trong suốt bao phủ thiết bị
+        const hitArea = document.createElement('div');
+        hitArea.className = "absolute cursor-pointer -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto group";
+        hitArea.style.left = `${comp.percent.x}%`;
+        hitArea.style.top = `${comp.percent.y}%`;
+        hitArea.style.width = '70px';
+        hitArea.style.height = '70px';
+        hitArea.style.zIndex = '15';
+
+        // Khung hào quang: Mặc định ẩn, chỉ khi click chọn mới hiện
+        const aura = document.createElement('div');
+        aura.id = `aura-${comp.id}`;
+        aura.className = "hidden absolute top-1/2 left-1/2 w-16 h-16 rounded-full border-2 border-amber-400 bg-amber-400/20 active-aura pointer-events-none";
+
+        // Nhãn tên thiết bị: Mặc định ẩn, chỉ khi click chọn mới hiện
+        const label = document.createElement('div');
+        label.id = `label-${comp.id}`;
+        label.className = "hidden absolute bottom-[115%] left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap px-3 py-1.5 rounded-xl bg-slate-900/95 text-amber-300 font-extrabold text-xs shadow-2xl border border-amber-400 z-30 flex items-center gap-1.5 animate-bounce";
+        label.innerHTML = `
+          <i class="fa-solid fa-bolt text-amber-400 text-[11px]"></i>
+          <span>${comp.name}</span>
+        `;
+
+        hitArea.appendChild(aura);
+        hitArea.appendChild(label);
+
+        // Sự kiện chạm/bấm trực tiếp vào thiết bị
+        hitArea.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectDevice(comp.id, true);
+        });
+
+        hotspotsLayer.appendChild(hitArea);
+      });
+    }
+
+    function selectDevice(deviceId, zoomAnimate = true) {
+      const data = ELECTRICAL_COMPONENTS.find(item => item.id === deviceId);
+      if (!data) return;
+
+      currentSelectedId = deviceId;
+      audio.playTransformSpark();
+
+      // Ẩn tất cả nhãn và hào quang cũ
+      ELECTRICAL_COMPONENTS.forEach(item => {
+        const aura = document.getElementById(`aura-${item.id}`);
+        const label = document.getElementById(`label-${item.id}`);
+        if (aura) aura.classList.add('hidden');
+        if (label) label.classList.add('hidden');
+      });
+
+      // Chỉ hiển thị hào quang & nhãn tên cho DUY NHẤT thiết bị vừa chọn
+      const currentAura = document.getElementById(`aura-${deviceId}`);
+      const currentLabel = document.getElementById(`label-${deviceId}`);
+      if (currentAura) currentAura.classList.remove('hidden');
+      if (currentLabel) currentLabel.classList.remove('hidden');
+
+      // Chớp loá quang học
+      flashOverlay.style.opacity = '1';
+      setTimeout(() => {
+        flashOverlay.style.opacity = '0';
+      }, 450);
+
+      // Cập nhật danh sách bên trái
+      document.querySelectorAll('.equipment-item-btn').forEach(btn => {
+        if (btn.dataset.id === deviceId) {
+          btn.classList.add('bg-amber-500/20', 'border-amber-400', 'text-amber-300');
+          btn.classList.remove('bg-slate-800/60', 'border-slate-700/80', 'text-slate-300');
+        } else {
+          btn.classList.remove('bg-amber-500/20', 'border-amber-400', 'text-amber-300');
+          btn.classList.add('bg-slate-800/60', 'border-slate-700/80', 'text-slate-300');
+        }
+      });
+
+      // Hiển thị cột thuyết minh bên phải (dạng layout flex, không đè lên hình ảnh)
+      const infoCard = document.getElementById('info-card');
+      infoCard.classList.remove('hidden');
+      infoCard.classList.add('flex');
+      document.getElementById('info-tag').innerText = data.tag;
+      document.getElementById('info-title').innerText = data.name;
+      document.getElementById('info-code').innerText = data.code;
+      document.getElementById('info-location').innerText = data.location;
+      document.getElementById('info-desc').innerText = data.desc;
+      document.getElementById('info-principle').innerText = data.principle;
+
+      if (zoomAnimate) {
+        // Tính toán tâm zoom cân đối vào giữa vùng nhìn khả dụng
+        const normX = (data.percent.x - 50) * -1;
+        const normY = (data.percent.y - 50) * -1;
+
+        // Phóng to biến hình rồi giữ vị trí tối ưu không bị che khuất
+        imgWrapper.style.transform = `scale(${data.zoomScale * 1.15}) translate(${normX * 0.42}%, ${normY * 0.42}%)`;
+        setTimeout(() => {
+          imgWrapper.style.transform = `scale(${data.zoomScale}) translate(${normX * 0.36}%, ${normY * 0.36}%)`;
+        }, 360);
+      }
+    }
+
+    function resetViewToFull() {
+      ELECTRICAL_COMPONENTS.forEach(item => {
+        const aura = document.getElementById(`aura-${item.id}`);
+        const label = document.getElementById(`label-${item.id}`);
+        if (aura) aura.classList.add('hidden');
+        if (label) label.classList.add('hidden');
+      });
+      imgWrapper.style.transform = 'scale(1) translate(0px, 0px)';
+    }
+
+    /* ==========================================================================
+       ISOLATE DEVICE VIEWER: LẤY 100% ẢNH THỰC TẾ CỦA THIẾT BỊ TỪ NGÔI NHÀ
+       ========================================================================== */
+    const isoRealImg = document.getElementById('isolate-real-img');
+    const isoViewport = document.getElementById('isolate-viewport');
+    const isoZoomSlider = document.getElementById('iso-zoom-slider');
+    const isoZoomVal = document.getElementById('iso-zoom-val');
+
+    let currentIsoData = null;
+    let isoCurrentZoom = 350;
+    let isoPanOffsetX = 0;
+    let isoPanOffsetY = 0;
+    let isIsoDragging = false;
+    let isoDragStartX = 0;
+    let isoDragStartY = 0;
+
+    function openIsolateStudio(deviceId) {
+      const data = ELECTRICAL_COMPONENTS.find(item => item.id === deviceId);
+      if (!data) return;
+
+      currentIsoData = data;
+      const mainImg = document.getElementById('main-house-img');
+      isoRealImg.src = mainImg.src;
+
+      document.getElementById('isolate-title').innerText = data.name;
+      document.getElementById('isolate-side-name').innerText = data.name;
+      document.getElementById('isolate-side-loc').innerHTML = `<i class="fa-solid fa-location-dot text-amber-400"></i> ${data.location}`;
+      document.getElementById('isolate-side-structure').innerText = data.structure;
+      document.getElementById('isolate-side-safety').innerText = data.safety;
+
+      const pointsList = document.getElementById('isolate-visual-points');
+      pointsList.innerHTML = '';
+      data.visualPoints.forEach(pt => {
+        const li = document.createElement('li');
+        li.className = "flex items-start gap-2";
+        li.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-[10px] mt-1 flex-shrink-0"></i><span>${pt}</span>`;
+        pointsList.appendChild(li);
+      });
+
+      document.getElementById('modal-isolate').classList.remove('hidden');
+
+      isoCurrentZoom = data.cropZoom || 350;
+      isoZoomSlider.value = isoCurrentZoom;
+      isoZoomVal.innerText = `${isoCurrentZoom}%`;
+      isoPanOffsetX = 0;
+      isoPanOffsetY = 0;
+
+      setTimeout(updateIsoImageTransform, 50);
+    }
+
+    function updateIsoImageTransform() {
+      if (!currentIsoData) return;
+      const frameEl = document.getElementById('isolate-display-frame');
+      const frameW = frameEl.clientWidth || 440;
+      const frameH = frameEl.clientHeight || 440;
+
+      isoRealImg.style.width = `${isoCurrentZoom * 2}%`;
+      isoRealImg.style.height = 'auto';
+
+      const targetPercentX = currentIsoData.percent.x / 100;
+      const targetPercentY = currentIsoData.percent.y / 100;
+
+      const imgW = isoRealImg.clientWidth || (frameW * (isoCurrentZoom / 100) * 2);
+      const imgH = isoRealImg.clientHeight || (frameH * (isoCurrentZoom / 100) * 2);
+
+      const posX = (frameW / 2) - (targetPercentX * imgW) + isoPanOffsetX;
+      const posY = (frameH / 2) - (targetPercentY * imgH) + isoPanOffsetY;
+
+      isoRealImg.style.left = `${posX}px`;
+      isoRealImg.style.top = `${posY}px`;
+    }
+
+    // Zoom Controls
+    isoZoomSlider.addEventListener('input', (e) => {
+      isoCurrentZoom = parseInt(e.target.value);
+      isoZoomVal.innerText = `${isoCurrentZoom}%`;
+      updateIsoImageTransform();
+    });
+
+    document.getElementById('btn-iso-zoom-in').addEventListener('click', () => {
+      if (isoCurrentZoom < 600) {
+        isoCurrentZoom = Math.min(600, isoCurrentZoom + 40);
+        isoZoomSlider.value = isoCurrentZoom;
+        isoZoomVal.innerText = `${isoCurrentZoom}%`;
+        updateIsoImageTransform();
+      }
+    });
+
+    document.getElementById('btn-iso-zoom-out').addEventListener('click', () => {
+      if (isoCurrentZoom > 100) {
+        isoCurrentZoom = Math.max(100, isoCurrentZoom - 40);
+        isoZoomSlider.value = isoCurrentZoom;
+        isoZoomVal.innerText = `${isoCurrentZoom}%`;
+        updateIsoImageTransform();
+      }
+    });
+
+    document.getElementById('btn-iso-reset-pos').addEventListener('click', () => {
+      if (currentIsoData) {
+        isoCurrentZoom = currentIsoData.cropZoom || 350;
+        isoZoomSlider.value = isoCurrentZoom;
+        isoZoomVal.innerText = `${isoCurrentZoom}%`;
+        isoPanOffsetX = 0;
+        isoPanOffsetY = 0;
+        updateIsoImageTransform();
+      }
+    });
+
+    // Mouse wheel zoom
+    isoViewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -25 : 25;
+      isoCurrentZoom = Math.max(100, Math.min(600, isoCurrentZoom + delta));
+      isoZoomSlider.value = isoCurrentZoom;
+      isoZoomVal.innerText = `${isoCurrentZoom}%`;
+      updateIsoImageTransform();
+    }, { passive: false });
+
+    // Interactive Drag / Pan
+    isoViewport.addEventListener('mousedown', (e) => {
+      isIsoDragging = true;
+      isoDragStartX = e.clientX - isoPanOffsetX;
+      isoDragStartY = e.clientY - isoPanOffsetY;
+      isoViewport.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isIsoDragging) return;
+      isoPanOffsetX = e.clientX - isoDragStartX;
+      isoPanOffsetY = e.clientY - isoDragStartY;
+      updateIsoImageTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isIsoDragging) {
+        isIsoDragging = false;
+        isoViewport.style.cursor = 'grab';
+      }
+    });
+
+    // Touch support for dragging
+    isoViewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isIsoDragging = true;
+        isoDragStartX = e.touches[0].clientX - isoPanOffsetX;
+        isoDragStartY = e.touches[0].clientY - isoPanOffsetY;
+      }
+    }, { passive: true });
+
+    isoViewport.addEventListener('touchmove', (e) => {
+      if (isIsoDragging && e.touches.length === 1) {
+        isoPanOffsetX = e.touches[0].clientX - isoDragStartX;
+        isoPanOffsetY = e.touches[0].clientY - isoDragStartY;
+        updateIsoImageTransform();
+      }
+    }, { passive: true });
+
+    isoViewport.addEventListener('touchend', () => {
+      isIsoDragging = false;
+    });
+
+    /* ==========================================================================
+       SIDEBAR & MINI-QUIZ
+       ========================================================================== */
+    function populateSidebarList() {
+      const listContainer = document.getElementById('equipment-list');
+      listContainer.innerHTML = '';
+
+      ELECTRICAL_COMPONENTS.forEach((comp) => {
+        const itemBtn = document.createElement('button');
+        itemBtn.dataset.id = comp.id;
+        itemBtn.className = "equipment-item-btn w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between text-xs bg-slate-800/60 border-slate-700/80 text-slate-300 hover:bg-slate-700/70 hover:border-slate-500 active:scale-[0.98]";
+
+        itemBtn.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-amber-400/80 shadow-[0_0_8px_rgba(245,158,11,0.8)] flex-shrink-0"></span>
+            <div>
+              <p class="font-bold text-white text-[11.5px] leading-snug">${comp.name}</p>
+              <p class="text-[10px] text-slate-400">${comp.tag}</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+        `;
+
+        itemBtn.addEventListener('click', () => {
+          selectDevice(comp.id, true);
+        });
+
+        listContainer.appendChild(itemBtn);
+      });
+    }
+
+    // Quiz Manager
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+
+    function startQuiz() {
+      currentQuizIndex = 0;
+      quizScore = 0;
+      document.getElementById('quiz-modal').classList.remove('hidden');
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      document.getElementById('quiz-question').innerText = `Câu ${currentQuizIndex + 1}: ${q.q}`;
+      document.getElementById('quiz-progress').innerText = `Câu ${currentQuizIndex + 1} / ${QUIZ_QUESTIONS.length}`;
+
+      const optionsBox = document.getElementById('quiz-options');
+      optionsBox.innerHTML = '';
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.add('hidden');
+      document.getElementById('btn-next-quiz').classList.add('hidden');
+
+      q.options.forEach((opt, idx) => {
+        const b = document.createElement('button');
+        b.className = "w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition flex items-center gap-2 text-slate-200";
+        b.innerHTML = `<span class="w-5 h-5 rounded-full bg-slate-900 text-[10px] flex items-center justify-center border border-slate-600 font-bold">${String.fromCharCode(65 + idx)}</span> <span>${opt}</span>`;
+        
+        b.addEventListener('click', () => {
+          checkAnswer(idx, b);
+        });
+        optionsBox.appendChild(b);
+      });
+    }
+
+    function checkAnswer(selectedIndex, clickedBtn) {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      const optionsBox = document.getElementById('quiz-options');
+      const allBtns = optionsBox.querySelectorAll('button');
+      allBtns.forEach(btn => btn.disabled = true);
+
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (selectedIndex === q.correct) {
+        audio.playSuccess();
+        quizScore++;
+        clickedBtn.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-300');
+        feedback.className = 'p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-200 text-xs';
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> <strong>Chính xác!</strong> ${q.explain}`;
+      } else {
+        clickedBtn.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-300');
+        allBtns[q.correct].classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-300');
+        feedback.className = 'p-3 rounded-xl bg-rose-950/80 border border-rose-600 text-rose-200 text-xs';
+        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 mr-1.5"></i> <strong>Chưa chính xác!</strong> ${q.explain}`;
+      }
+
+      document.getElementById('btn-next-quiz').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       INITIALIZATION & EVENT BINDINGS
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupImageLoading();
+      createHotspots();
+      populateSidebarList();
+
+      // Reset view button
+      document.getElementById('btn-reset-view').addEventListener('click', () => {
+        audio.playSelect();
+        resetViewToFull();
+      });
+
+      // Close Detail Card
+      document.getElementById('btn-close-card').addEventListener('click', () => {
+        const infoCard = document.getElementById('info-card');
+        infoCard.classList.add('hidden');
+        infoCard.classList.remove('flex');
+        resetViewToFull();
+      });
+
+      // Open Isolate Studio Modal
+      document.getElementById('btn-isolate-3d').addEventListener('click', () => {
+        audio.playSelect();
+        openIsolateStudio(currentSelectedId || 'tu-dien-tong');
+      });
+
+      document.getElementById('btn-close-isolate').addEventListener('click', () => {
+        document.getElementById('modal-isolate').classList.add('hidden');
+      });
+
+      // Quiz Modal Handlers
+      document.getElementById('btn-open-quiz').addEventListener('click', () => {
+        audio.playSelect();
+        startQuiz();
+      });
+
+      document.getElementById('btn-close-quiz').addEventListener('click', () => {
+        document.getElementById('quiz-modal').classList.add('hidden');
+      });
+
+      document.getElementById('btn-next-quiz').addEventListener('click', () => {
+        audio.playSelect();
+        currentQuizIndex++;
+        if (currentQuizIndex < QUIZ_QUESTIONS.length) {
+          renderQuizQuestion();
+        } else {
+          const content = document.getElementById('quiz-content');
+          content.innerHTML = `
+            <div class="text-center py-6 space-y-3">
+              <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-amber-500/40">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <h4 class="text-base font-bold text-white">Hoàn Thành Bài Ôn Tập!</h4>
+              <p class="text-sm text-slate-300">Em đã trả lời đúng <strong class="text-amber-400 font-bold">${quizScore} / ${QUIZ_QUESTIONS.length}</strong> câu hỏi củng cố Bài 8 Công nghệ 12.</p>
+            </div>
+          `;
+          document.getElementById('btn-next-quiz').classList.add('hidden');
+        }
+      });
+
+      // Click vào vùng trống để reset
+      document.getElementById('board-container').addEventListener('click', (e) => {
+        if (e.target.id === 'main-house-img') {
+          resetViewToFull();
+          const infoCard = document.getElementById('info-card');
+          infoCard.classList.add('hidden');
+          infoCard.classList.remove('flex');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
